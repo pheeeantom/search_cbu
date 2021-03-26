@@ -2,6 +2,76 @@ function preg_quote( str ) {
     return (str+'').replace(/([\\\.\+\*\?\[\^\]\$\(\)\{\}\=\!\<\>\|\:])/g, "\\$1");
 }
 
+function getLeafNodes(master) {
+    if (master.children.length > 0) {
+        var nodes = Array.prototype.slice.call(master.getElementsByTagName("*"), 0);
+        var leafNodes = nodes.filter(function(elem) {
+            if (elem.hasChildNodes()) {
+                // see if any of the child nodes are elements
+                for (var i = 0; i < elem.childNodes.length; i++) {
+                    if (elem.childNodes[i].nodeType == 1) {
+                        // there is a child element, so return false to not include
+                        // this parent element
+                        return false;
+                    }
+                }
+            }
+            return true;
+        });
+        return leafNodes;
+    }
+    else {
+        var leafNodes = new Array();
+        leafNodes.push(master);
+        return leafNodes;
+    }
+}
+
+function add_setting(name, number, searchCallback, div) {
+    var settingLabel = document.createElement('label');
+    settingLabel.style.display = 'inline-block';
+    var settingImg = document.createElement('img');
+    settingImg.src =  chrome.runtime.getURL('images/' + name + '.png');
+    settingImg.width = 25;
+    var setting = document.createElement('input');
+    setting.type = 'radio';
+    if (number == 0)
+        setting.checked = true;
+    setting.addEventListener('click', function(event) {
+        if (set != number) {
+            for (var j = 0; j < elements.length; j++) {
+                elements[j].innerHTML = elementsCopy[j];
+            }
+            set = number;
+            for (var i = 0; i < number; i++) {
+                document.getElementById('settings-plugin-pheeantom').children[i].children[0].checked = false;
+            }
+            for (var i = number + 1; i < NUM_OF_SETTINGS; i++) {
+                document.getElementById('settings-plugin-pheeantom').children[i].children[0].checked = false;
+            }
+            searchCallback();
+            elementsCopy = new Array(elements.length);
+            for (var i = 0; i < elements.length; i++) {
+                elementsCopy[i] = elements[i].innerHTML;
+            }
+            if (document.getElementById('search-plugin-pheeantom').value != '') {
+                for (var k = 0; k < elements.length; k++) {
+                    elements[k].innerHTML = elementsCopy[k].replace(new RegExp("(" + preg_quote(document.getElementById('search-plugin-pheeantom').value) + ")", 'gi'), "<span style='background-color: red'>$1</span>");
+                }
+            }
+            else {
+                for (var k = 0; k < elements.length; k++) {
+                    elements[k].innerHTML = elementsCopy[k];
+                }
+            }
+        }
+    });
+    div.appendChild(settingLabel);
+    settingLabel.appendChild(setting);
+    settingLabel.appendChild(settingImg);
+}
+
+var NUM_OF_SETTINGS = 4;
 var key1 = false;
 var key2 = false;
 var key3 = false;
@@ -50,115 +120,30 @@ document.addEventListener('keydown', function(event) {
         div.style.bottom = '20px';
         div.style.left = '5px';
         div.style.zIndex = '1000';
-        var boldLabel = document.createElement('label');
-        boldLabel.style.display = 'inline-block';
-        var boldImg = document.createElement('img');
-        boldImg.src =  chrome.runtime.getURL('images/bold.png');
-        boldImg.width = 25;
-        var bold = document.createElement('input');
-        bold.type = 'radio';
-        bold.checked = true;
-        bold.addEventListener('click', function(event) {
-            if (set != 0) {
-                for (var j = 0; j < elements.length; j++) {
-                    elements[j].innerHTML = elementsCopy[j];
-                }
-                set = 0;
-                document.getElementById('settings-plugin-pheeantom').children[1].children[0].checked = false;
-                document.getElementById('settings-plugin-pheeantom').children[2].children[0].checked = false;
-                elements = Array.from(document.querySelectorAll('*')).filter(element => getComputedStyle(element).fontWeight >= 500);
-                elements = Array.from(elements).filter(element => element.children.length == 0);
-                elementsCopy = new Array(elements.length);
-                for (var i = 0; i < elements.length; i++) {
-                    elementsCopy[i] = elements[i].innerHTML;
-                }
-                if (document.getElementById('search-plugin-pheeantom').value != '') {
-                    for (var k = 0; k < elements.length; k++) {
-                        elements[k].innerHTML = elementsCopy[k].replace(new RegExp("(" + preg_quote(document.getElementById('search-plugin-pheeantom').value) + ")", 'gi'), "<span style='background-color: red'>$1</span>");
-                    }
-                }
-                else {
-                    for (var k = 0; k < elements.length; k++) {
-                        elements[k].innerHTML = elementsCopy[k];
-                    }
-                }
+        add_setting('bold', 0, function(){
+            elements = Array.from(document.querySelectorAll('*')).filter(element => getComputedStyle(element).fontWeight >= 500);
+            elements = Array.from(elements).filter(element => element.children.length == 0);
+        }, div);
+        add_setting('cursive', 1, function(){
+            elements = Array.from(document.querySelectorAll('*')).filter(element => getComputedStyle(element).fontStyle == 'italic' || getComputedStyle(element).fontStyle == 'oblique');
+            elements = Array.from(elements).filter(element => element.children.length == 0);
+        }, div);
+        add_setting('header', 2, function(){
+            elements = Array.from(document.querySelectorAll('h1,h2,h3,h4,h5,h6'));
+            var add = new Array();
+            for (var i = 0; i < elements.length; i++) {
+                add = add.concat(getLeafNodes(elements[i]));
             }
-        });
-        var cursiveLabel = document.createElement('label');
-        cursiveLabel.style.display = 'inline-block';
-        var cursiveImg = document.createElement('img');
-        cursiveImg.src =  chrome.runtime.getURL('images/cursive.png');
-        cursiveImg.width = 25;
-        var cursive = document.createElement('input');
-        cursive.type = 'radio';
-        cursive.addEventListener('click', function(event) {
-            if (set != 1) {
-                for (var j = 0; j < elements.length; j++) {
-                    elements[j].innerHTML = elementsCopy[j];
-                }
-                set = 1;
-                document.getElementById('settings-plugin-pheeantom').children[0].children[0].checked = false;
-                document.getElementById('settings-plugin-pheeantom').children[2].children[0].checked = false;
-                elements = Array.from(document.querySelectorAll('*')).filter(element => getComputedStyle(element).fontStyle == 'italic' || getComputedStyle(element).fontStyle == 'oblique');
-                elements = Array.from(elements).filter(element => element.children.length == 0);
-                elementsCopy = new Array(elements.length);
-                for (var i = 0; i < elements.length; i++) {
-                    elementsCopy[i] = elements[i].innerHTML;
-                }
-                if (document.getElementById('search-plugin-pheeantom').value != '') {
-                    for (var k = 0; k < elements.length; k++) {
-                        elements[k].innerHTML = elementsCopy[k].replace(new RegExp("(" + preg_quote(document.getElementById('search-plugin-pheeantom').value) + ")", 'gi'), "<span style='background-color: red'>$1</span>");
-                    }
-                }
-                else {
-                    for (var k = 0; k < elements.length; k++) {
-                        elements[k].innerHTML = elementsCopy[k];
-                    }
-                }
+            elements = add;
+        }, div);
+        add_setting('link', 3, function(){
+            elements = Array.from(document.querySelectorAll('a'));
+            var add = new Array();
+            for (var i = 0; i < elements.length; i++) {
+                add = add.concat(getLeafNodes(elements[i]));
             }
-        });
-        var headerLabel = document.createElement('label');
-        headerLabel.style.display = 'inline-block';
-        var headerImg = document.createElement('img');
-        headerImg.src =  chrome.runtime.getURL('images/header.png');
-        headerImg.width = 25;
-        var header = document.createElement('input');
-        header.type = 'radio';
-        header.addEventListener('click', function(event) {
-            if (set != 2) {
-                for (var j = 0; j < elements.length; j++) {
-                    elements[j].innerHTML = elementsCopy[j];
-                }
-                set = 2;
-                document.getElementById('settings-plugin-pheeantom').children[0].children[0].checked = false;
-                document.getElementById('settings-plugin-pheeantom').children[1].children[0].checked = false;
-                elements = Array.from(document.querySelectorAll('h1,h2,h3,h4,h5,h6'));
-                elementsCopy = new Array(elements.length);
-                for (var i = 0; i < elements.length; i++) {
-                    elementsCopy[i] = elements[i].innerHTML;
-                }
-                if (document.getElementById('search-plugin-pheeantom').value != '') {
-                    for (var k = 0; k < elements.length; k++) {
-                        elements[k].innerHTML = elementsCopy[k].replace(new RegExp("(" + preg_quote(document.getElementById('search-plugin-pheeantom').value) + ")", 'gi'), "<span style='background-color: red'>$1</span>");
-                    }
-                }
-                else {
-                    for (var k = 0; k < elements.length; k++) {
-                        elements[k].innerHTML = elementsCopy[k];
-                    }
-                }
-            }
-        });
-        div.appendChild(boldLabel);
-        boldLabel.appendChild(bold);
-        boldLabel.appendChild(boldImg);
-        div.appendChild(cursiveLabel);
-        cursiveLabel.appendChild(cursive);
-        cursiveLabel.appendChild(cursiveImg);
-        document.body.appendChild(div);
-        div.appendChild(headerLabel);
-        headerLabel.appendChild(header);
-        headerLabel.appendChild(headerImg);
+            elements = add;
+        }, div);
         document.body.appendChild(div);
         elements = Array.from(document.querySelectorAll('*')).filter(element => getComputedStyle(element).fontWeight >= 500);
         elements = Array.from(elements).filter(element => element.children.length == 0);
