@@ -1,0 +1,25 @@
+{
+    "manifest_version": 3,
+    "version": "1.0",
+    "name": "Поиск по начертаниям",
+    "description": "Поиск по жирному и курсивному начертаниям",
+    "content_scripts": [
+        {
+            "matches": [
+                "<all_urls>"
+            ],
+            "js": [
+                "content.js"
+            ],
+            "css" : [
+                "styles/style.css"
+            ]
+        }
+    ],
+    "web_accessible_resources": [
+        {
+            "resources": [ "images/*" ],
+            "matches": [ "<all_urls>" ]
+        }
+    ]
+}
