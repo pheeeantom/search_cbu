@@ -2,29 +2,14 @@ function preg_quote( str ) {
     return (str+'').replace(/([\\\.\+\*\?\[\^\]\$\(\)\{\}\=\!\<\>\|\:])/g, "\\$1");
 }
 
-function getLeafNodes(master) {
-    if (master.children.length > 0) {
-        var nodes = Array.prototype.slice.call(master.getElementsByTagName("*"), 0);
-        var leafNodes = nodes.filter(function(elem) {
-            if (elem.hasChildNodes()) {
-                // see if any of the child nodes are elements
-                for (var i = 0; i < elem.childNodes.length; i++) {
-                    if (elem.childNodes[i].nodeType == 1) {
-                        // there is a child element, so return false to not include
-                        // this parent element
-                        return false;
-                    }
-                }
-            }
-            return true;
-        });
-        return leafNodes;
+function getDescendants(node, accum) {
+    var i;
+    accum = accum || [];
+    for (i = 0; i < node.childNodes.length; i++) {
+        accum.push(node.childNodes[i])
+        getDescendants(node.childNodes[i], accum);
     }
-    else {
-        var leafNodes = new Array();
-        leafNodes.push(master);
-        return leafNodes;
-    }
+    return accum;
 }
 
 function add_setting(name, number, searchCallback, div) {
@@ -50,13 +35,29 @@ function add_setting(name, number, searchCallback, div) {
                 document.getElementById('settings-plugin-pheeantom').children[i].children[0].checked = false;
             }
             searchCallback();
+            var nodes = new Array();
+            for (var i = 0; i < elements.length; i++) {
+                nodes = nodes.concat(getDescendants(elements[i]));
+            }
+            var text = new Array();
+            for (var i = 0; i < nodes.length; i++) {
+                if (nodes[i].nodeType == Node.TEXT_NODE){
+                    text.push(nodes[i]);
+                }
+            }
             elementsCopy = new Array(elements.length);
             for (var i = 0; i < elements.length; i++) {
                 elementsCopy[i] = elements[i].innerHTML;
             }
             if (document.getElementById('search-plugin-pheeantom').value != '') {
-                for (var k = 0; k < elements.length; k++) {
-                    elements[k].innerHTML = elementsCopy[k].replace(new RegExp("(" + preg_quote(document.getElementById('search-plugin-pheeantom').value) + ")", 'gi'), "<span style='background-color: red'>$1</span>");
+                for (var k = 0; k < text.length; k++) {
+                    if (text[k].nodeValue.match(/^[ \n]*$/) === null) {
+                        console.log(text[k].nodeValue);
+                        text[k].nodeValue = text[k].nodeValue.replace(new RegExp("(" + preg_quote(document.getElementById('search-plugin-pheeantom').value) + ")", 'gi'), "<span style='background-color: red'>$1</span>");
+                        var buf = text[k].parentNode.innerHTML.replace(new RegExp("&lt;span style='background-color: red'&gt;",'g'), "<span style='background-color: red'>");
+                        buf = buf.replace(new RegExp("&lt;/span&gt;",'g'), "</span>");
+                        text[k].parentNode.innerHTML = buf;
+                    }
                 }
             }
             else {
@@ -91,9 +92,28 @@ document.addEventListener('keydown', function(event) {
         var inp = document.createElement('input');
         inp.addEventListener('input', function(event) {
             console.time('FirstWay');
+            for (var j = 0; j < elements.length; j++) {
+                elements[j].innerHTML = elementsCopy[j];
+            }
+            var nodes = new Array();
+            for (var i = 0; i < elements.length; i++) {
+                nodes = nodes.concat(getDescendants(elements[i]));
+            }
+            var text = new Array();
+            for (var i = 0; i < nodes.length; i++) {
+                if (nodes[i].nodeType == Node.TEXT_NODE){
+                    text.push(nodes[i]);
+                }
+            }
             if (document.getElementById('search-plugin-pheeantom').value != '') {
-                for (var i = 0; i < elements.length; i++) {
-                    elements[i].innerHTML = elementsCopy[i].replace(new RegExp("(" + preg_quote(document.getElementById('search-plugin-pheeantom').value) + ")", 'gi'), "<span style='background-color: red'>$1</span>");
+                for (var k = 0; k < text.length; k++) {
+                    if (text[k].nodeValue.match(/^[ \n]*$/) === null) {
+                        console.log(text[k].nodeValue);
+                        text[k].nodeValue = text[k].nodeValue.replace(new RegExp("(" + preg_quote(document.getElementById('search-plugin-pheeantom').value) + ")", 'gi'), "<span style='background-color: red'>$1</span>");
+                        var buf = text[k].parentNode.innerHTML.replace(new RegExp("&lt;span style='background-color: red'&gt;",'g'), "<span style='background-color: red'>");
+                        buf = buf.replace(new RegExp("&lt;/span&gt;",'g'), "</span>");
+                        text[k].parentNode.innerHTML = buf;
+                    }
                 }
             }
             else {
@@ -130,19 +150,9 @@ document.addEventListener('keydown', function(event) {
         }, div);
         add_setting('header', 2, function(){
             elements = Array.from(document.querySelectorAll('h1,h2,h3,h4,h5,h6'));
-            var add = new Array();
-            for (var i = 0; i < elements.length; i++) {
-                add = add.concat(getLeafNodes(elements[i]));
-            }
-            elements = add;
         }, div);
         add_setting('link', 3, function(){
             elements = Array.from(document.querySelectorAll('a'));
-            var add = new Array();
-            for (var i = 0; i < elements.length; i++) {
-                add = add.concat(getLeafNodes(elements[i]));
-            }
-            elements = add;
         }, div);
         document.body.appendChild(div);
         elements = Array.from(document.querySelectorAll('*')).filter(element => getComputedStyle(element).fontWeight >= 500);
