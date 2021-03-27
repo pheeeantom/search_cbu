@@ -15,11 +15,15 @@ function getDescendants(node, accum) {
 function add_setting(name, number, searchCallback, div) {
     var settingLabel = document.createElement('label');
     settingLabel.style.display = 'inline-block';
+    settingLabel.style.marginBottom = '5px';
+    settingLabel.style.boxSizing = 'border-box';
     var settingImg = document.createElement('img');
     settingImg.src =  chrome.runtime.getURL('images/' + name + '.png');
     settingImg.width = 25;
+    settingImg.style.boxSizing = 'border-box';
     var setting = document.createElement('input');
     setting.type = 'radio';
+    setting.style.boxSizing = 'border-box';
     if (number == 0)
         setting.checked = true;
     setting.addEventListener('click', function(event) {
@@ -51,7 +55,7 @@ function add_setting(name, number, searchCallback, div) {
             }
             if (document.getElementById('search-plugin-pheeantom').value != '') {
                 for (var k = 0; k < text.length; k++) {
-                    if (text[k].nodeValue.match(/^[ \n]*$/) === null) {
+                    if (text[k].nodeValue.match(/^[ \n\t]*$/) === null) {
                         console.log(text[k].nodeValue);
                         text[k].nodeValue = text[k].nodeValue.replace(new RegExp("(" + preg_quote(document.getElementById('search-plugin-pheeantom').value) + ")", 'gi'), "<span style='background-color: red'>$1</span>");
                         var buf = text[k].parentNode.innerHTML.replace(new RegExp("&lt;span style='background-color: red'&gt;",'g'), "<span style='background-color: red'>");
@@ -107,7 +111,7 @@ document.addEventListener('keydown', function(event) {
             }
             if (document.getElementById('search-plugin-pheeantom').value != '') {
                 for (var k = 0; k < text.length; k++) {
-                    if (text[k].nodeValue.match(/^[ \n]*$/) === null) {
+                    if (text[k].nodeValue.match(/^[ \n\t]*$/) === null) {
                         console.log(text[k].nodeValue);
                         text[k].nodeValue = text[k].nodeValue.replace(new RegExp("(" + preg_quote(document.getElementById('search-plugin-pheeantom').value) + ")", 'gi'), "<span style='background-color: red'>$1</span>");
                         var buf = text[k].parentNode.innerHTML.replace(new RegExp("&lt;span style='background-color: red'&gt;",'g'), "<span style='background-color: red'>");
@@ -133,6 +137,8 @@ document.addEventListener('keydown', function(event) {
         inp.placeholder = 'Search...';
         inp.style.zIndex = '2000';
         inp.autofocus = true;
+        inp.style.margin = '0';
+        inp.style.boxSizing = 'border-box';
         document.body.appendChild(inp);
         var div = document.createElement('div');
         div.id = 'settings-plugin-pheeantom';
@@ -154,6 +160,8 @@ document.addEventListener('keydown', function(event) {
         add_setting('link', 3, function(){
             elements = Array.from(document.querySelectorAll('a'));
         }, div);
+        div.style.boxSizing = 'border-box';
+        div.style.height = '49.300px';
         document.body.appendChild(div);
         elements = Array.from(document.querySelectorAll('*')).filter(element => getComputedStyle(element).fontWeight >= 500);
         elements = Array.from(elements).filter(element => element.children.length == 0);
