@@ -136,7 +136,7 @@ document.addEventListener('keydown', function(event) {
         inp.style.height = '35px';
         inp.style.borderRadius = '5px';
         inp.placeholder = 'Search...';
-        inp.style.zIndex = '2000';
+        inp.style.zIndex = '20000';
         inp.autofocus = true;
         inp.style.margin = '0';
         inp.style.boxSizing = 'border-box';
@@ -147,7 +147,7 @@ document.addEventListener('keydown', function(event) {
         div.style.position = 'fixed';
         div.style.bottom = '20px';
         div.style.left = '5px';
-        div.style.zIndex = '1000';
+        div.style.zIndex = '10000';
         add_setting('bold', 0, function(){
             elements = Array.from(document.querySelectorAll('*')).filter(element => getComputedStyle(element).fontWeight >= 500);
             elements = Array.from(elements).filter(element => element.children.length == 0);
