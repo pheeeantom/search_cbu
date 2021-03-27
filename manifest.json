@@ -2,7 +2,7 @@
     "manifest_version": 3,
     "version": "1.0",
     "name": "Search CBU",
-    "description": "Поиск по жирному и курсивному начертаниям",
+    "description": "Searching in cursive, bold texts, headers or links",
     "content_scripts": [
         {
             "matches": [

@@ -1,11 +1,11 @@
-label > input{ /* HIDE RADIO */
+.label-plugin-pheeantom > .radio-plugin-pheeantom { /* HIDE RADIO */
   visibility: hidden; /* Makes input not-clickable */
   position: absolute; /* Remove input from document flow */
 }
-label > input + img{ /* IMAGE STYLES */
+.label-plugin-pheeantom > .radio-plugin-pheeantom + .img-plugin-pheeantom { /* IMAGE STYLES */
   cursor:pointer;
   border:2px solid transparent;
 }
-label > input:checked + img{ /* (RADIO CHECKED) IMAGE STYLES */
+.label-plugin-pheeantom > .radio-plugin-pheeantom:checked + .img-plugin-pheeantom { /* (RADIO CHECKED) IMAGE STYLES */
   border:2px solid #f00;
 }   

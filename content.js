@@ -24,13 +24,17 @@ function add_setting(name, number, searchCallback, div) {
     settingLabel.style.marginBottom = '5px';
     settingLabel.style.boxSizing = 'border-box';
     settingLabel.style.height = '35.500px';
+    settingLabel.className = 'label-plugin-pheeantom';
     var settingImg = document.createElement('img');
     settingImg.src =  chrome.runtime.getURL('images/' + name + '.png');
     settingImg.style.width = '25px';
     settingImg.style.boxSizing = 'border-box';
+    settingImg.style.filter = 'none';
+    settingImg.className = 'img-plugin-pheeantom';
     var setting = document.createElement('input');
     setting.type = 'radio';
     setting.style.boxSizing = 'border-box';
+    setting.className = 'radio-plugin-pheeantom';
     if (number == 0)
         setting.checked = true;
     setting.addEventListener('click', function(event) {
@@ -99,7 +103,7 @@ document.addEventListener('keydown', function(event) {
         search = true;
         var inp = document.createElement('input');
         inp.addEventListener('input', function(event) {
-            console.time('FirstWay');
+            //console.time('FirstWay');
             for (var j = 0; j < elements.length; j++) {
                 elements[j].innerHTML = elementsCopy[j];
             }
@@ -126,7 +130,7 @@ document.addEventListener('keydown', function(event) {
                     elements[k].innerHTML = elementsCopy[k];
                 }
             }
-            console.timeEnd('FirstWay');
+            //console.timeEnd('FirstWay');
         });
         inp.id = 'search-plugin-pheeantom';
         inp.style.position = 'fixed';
@@ -141,6 +145,7 @@ document.addEventListener('keydown', function(event) {
         inp.style.margin = '0';
         inp.style.boxSizing = 'border-box';
         inp.autocomplete = 'off';
+        inp.style.backgroundColor = 'white';
         document.body.appendChild(inp);
         var div = document.createElement('div');
         div.id = 'settings-plugin-pheeantom';
@@ -150,11 +155,11 @@ document.addEventListener('keydown', function(event) {
         div.style.zIndex = '10000';
         add_setting('bold', 0, function(){
             elements = Array.from(document.querySelectorAll('*')).filter(element => getComputedStyle(element).fontWeight >= 500);
-            elements = Array.from(elements).filter(element => element.children.length == 0);
+            //elements = Array.from(elements).filter(element => element.children.length == 0);
         }, div);
         add_setting('cursive', 1, function(){
             elements = Array.from(document.querySelectorAll('*')).filter(element => getComputedStyle(element).fontStyle == 'italic' || getComputedStyle(element).fontStyle == 'oblique');
-            elements = Array.from(elements).filter(element => element.children.length == 0);
+            //elements = Array.from(elements).filter(element => element.children.length == 0);
         }, div);
         add_setting('header', 2, function(){
             elements = Array.from(document.querySelectorAll('h1,h2,h3,h4,h5,h6'));
