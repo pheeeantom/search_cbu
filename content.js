@@ -63,7 +63,7 @@ function add_setting(name, number, searchCallback, div) {
             if (document.getElementById('search-plugin-pheeantom').value != '') {
                 for (var k = 0; k < text.length; k++) {
                     if (text[k].nodeValue.match(/^[ \t\v\r\n\f]*$/) === null) {
-                        var elems = parseHTML(text[k].nodeValue.replace(new RegExp("(" + preg_quote(document.getElementById('search-plugin-pheeantom').value) + ")", 'gi'), "<span style='background-color: red; display: inline'>$1</span>"));
+                        var elems = parseHTML(text[k].nodeValue.replace(new RegExp("(" + preg_quote(document.getElementById('search-plugin-pheeantom').value) + ")", 'gi'), "<span style='background-color: red; display: inline; padding: 0; margin: 0'>$1</span>"));
                         text[k].replaceWith(elems);
                     }
                 }
@@ -116,7 +116,7 @@ document.addEventListener('keydown', function(event) {
             if (document.getElementById('search-plugin-pheeantom').value != '') {
                 for (var k = 0; k < text.length; k++) {
                     if (text[k].nodeValue.match(/^[ \t\v\r\n\f]*$/) === null) {
-                        var elems = parseHTML(text[k].nodeValue.replace(new RegExp("(" + preg_quote(document.getElementById('search-plugin-pheeantom').value) + ")", 'gi'), "<span style='background-color: red; display: inline'>$1</span>"));
+                        var elems = parseHTML(text[k].nodeValue.replace(new RegExp("(" + preg_quote(document.getElementById('search-plugin-pheeantom').value) + ")", 'gi'), "<span style='background-color: red; display: inline; padding: 0; margin: 0'>$1</span>"));
                         text[k].replaceWith(elems);
                     }
                 }
