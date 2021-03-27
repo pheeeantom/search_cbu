@@ -1,7 +1,7 @@
 {
     "manifest_version": 3,
     "version": "1.0",
-    "name": "Поиск по начертаниям",
+    "name": "Search CBU",
     "description": "Поиск по жирному и курсивному начертаниям",
     "content_scripts": [
         {

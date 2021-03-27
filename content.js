@@ -12,14 +12,21 @@ function getDescendants(node, accum) {
     return accum;
 }
 
+function parseHTML(html) {
+    var t = document.createElement('template');
+    t.innerHTML = html;
+    return t.content;
+}
+
 function add_setting(name, number, searchCallback, div) {
     var settingLabel = document.createElement('label');
     settingLabel.style.display = 'inline-block';
     settingLabel.style.marginBottom = '5px';
     settingLabel.style.boxSizing = 'border-box';
+    settingLabel.style.height = '35.500px';
     var settingImg = document.createElement('img');
     settingImg.src =  chrome.runtime.getURL('images/' + name + '.png');
-    settingImg.width = 25;
+    settingImg.style.width = '25px';
     settingImg.style.boxSizing = 'border-box';
     var setting = document.createElement('input');
     setting.type = 'radio';
@@ -55,12 +62,9 @@ function add_setting(name, number, searchCallback, div) {
             }
             if (document.getElementById('search-plugin-pheeantom').value != '') {
                 for (var k = 0; k < text.length; k++) {
-                    if (text[k].nodeValue.match(/^[ \n\t]*$/) === null) {
-                        console.log(text[k].nodeValue);
-                        text[k].nodeValue = text[k].nodeValue.replace(new RegExp("(" + preg_quote(document.getElementById('search-plugin-pheeantom').value) + ")", 'gi'), "<span style='background-color: red'>$1</span>");
-                        var buf = text[k].parentNode.innerHTML.replace(new RegExp("&lt;span style='background-color: red'&gt;",'g'), "<span style='background-color: red'>");
-                        buf = buf.replace(new RegExp("&lt;/span&gt;",'g'), "</span>");
-                        text[k].parentNode.innerHTML = buf;
+                    if (text[k].nodeValue.match(/^[ \t\v\r\n\f]*$/) === null) {
+                        var elems = parseHTML(text[k].nodeValue.replace(new RegExp("(" + preg_quote(document.getElementById('search-plugin-pheeantom').value) + ")", 'gi'), "<span style='background-color: red; display: inline'>$1</span>"));
+                        text[k].replaceWith(elems);
                     }
                 }
             }
@@ -111,12 +115,9 @@ document.addEventListener('keydown', function(event) {
             }
             if (document.getElementById('search-plugin-pheeantom').value != '') {
                 for (var k = 0; k < text.length; k++) {
-                    if (text[k].nodeValue.match(/^[ \n\t]*$/) === null) {
-                        console.log(text[k].nodeValue);
-                        text[k].nodeValue = text[k].nodeValue.replace(new RegExp("(" + preg_quote(document.getElementById('search-plugin-pheeantom').value) + ")", 'gi'), "<span style='background-color: red'>$1</span>");
-                        var buf = text[k].parentNode.innerHTML.replace(new RegExp("&lt;span style='background-color: red'&gt;",'g'), "<span style='background-color: red'>");
-                        buf = buf.replace(new RegExp("&lt;/span&gt;",'g'), "</span>");
-                        text[k].parentNode.innerHTML = buf;
+                    if (text[k].nodeValue.match(/^[ \t\v\r\n\f]*$/) === null) {
+                        var elems = parseHTML(text[k].nodeValue.replace(new RegExp("(" + preg_quote(document.getElementById('search-plugin-pheeantom').value) + ")", 'gi'), "<span style='background-color: red; display: inline'>$1</span>"));
+                        text[k].replaceWith(elems);
                     }
                 }
             }
@@ -139,6 +140,7 @@ document.addEventListener('keydown', function(event) {
         inp.autofocus = true;
         inp.style.margin = '0';
         inp.style.boxSizing = 'border-box';
+        inp.autocomplete = 'off';
         document.body.appendChild(inp);
         var div = document.createElement('div');
         div.id = 'settings-plugin-pheeantom';
