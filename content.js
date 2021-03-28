@@ -72,11 +72,11 @@ function add_setting(name, number, searchCallback, div) {
                     }
                 }
             }
-            else {
+            /*else {
                 for (var k = 0; k < elements.length; k++) {
                     elements[k].innerHTML = elementsCopy[k];
                 }
-            }
+            }*/
         }
     });
     div.appendChild(settingLabel);
@@ -125,11 +125,11 @@ document.addEventListener('keydown', function(event) {
                     }
                 }
             }
-            else {
+            /*else {
                 for (var k = 0; k < elements.length; k++) {
                     elements[k].innerHTML = elementsCopy[k];
                 }
-            }
+            }*/
             //console.timeEnd('FirstWay');
         });
         inp.id = 'search-plugin-pheeantom';
@@ -171,7 +171,7 @@ document.addEventListener('keydown', function(event) {
         div.style.height = '49.300px';
         document.body.appendChild(div);
         elements = Array.from(document.querySelectorAll('*')).filter(element => getComputedStyle(element).fontWeight >= 500);
-        elements = Array.from(elements).filter(element => element.children.length == 0);
+        //elements = Array.from(elements).filter(element => element.children.length == 0);
         elementsCopy = new Array(elements.length);
         for (var i = 0; i < elements.length; i++) {
             elementsCopy[i] = elements[i].innerHTML;
