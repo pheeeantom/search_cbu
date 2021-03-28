@@ -18,6 +18,48 @@ function parseHTML(html) {
     return t.content;
 }
 
+function createText(elements) {
+    var nodes = new Array();
+    for (var i = 0; i < elements.length; i++) {
+        nodes = nodes.concat(getDescendants(elements[i]));
+    }
+    text = new Array();
+    for (var i = 0; i < nodes.length; i++) {
+        if (nodes[i].nodeType == Node.TEXT_NODE){
+            if (nodes[i].nodeValue.match(/^[ \t\v\r\n\f]*$/) === null) {
+                text.push(nodes[i]);
+            }
+        }
+    }
+}
+
+function createTextCopy() {
+    textCopy = new Array(text.length);
+    for (var i = 0; i < text.length; i++) {
+        textCopy[i] = text[i].nodeValue;
+    }
+}
+
+function bold() {
+    var elements = Array.from(document.querySelectorAll('*')).filter(element => getComputedStyle(element).fontWeight >= 500);
+    createText(elements);
+}
+
+function cursive() {
+    var elements = Array.from(document.querySelectorAll('*')).filter(element => getComputedStyle(element).fontStyle == 'italic' || getComputedStyle(element).fontStyle == 'oblique');
+    createText(elements);
+}
+
+function header() {
+    var elements = Array.from(document.querySelectorAll('h1,h2,h3,h4,h5,h6'));
+    createText(elements);
+}
+
+function link() {
+    var elements = Array.from(document.querySelectorAll('a'));
+    createText(elements);
+}
+
 function add_setting(name, number, searchCallback, div) {
     var settingLabel = document.createElement('label');
     settingLabel.style.display = 'inline-block';
@@ -39,8 +81,8 @@ function add_setting(name, number, searchCallback, div) {
         setting.checked = true;
     setting.addEventListener('click', function(event) {
         if (set != number) {
-            for (var j = 0; j < elements.length; j++) {
-                elements[j].innerHTML = elementsCopy[j];
+            for (var j = 0; j < text.length; j++) {
+                text[j].nodeValue = textCopy[j];
             }
             set = number;
             for (var i = 0; i < number; i++) {
@@ -50,33 +92,13 @@ function add_setting(name, number, searchCallback, div) {
                 document.getElementById('settings-plugin-pheeantom').children[i].children[0].checked = false;
             }
             searchCallback();
-            var nodes = new Array();
-            for (var i = 0; i < elements.length; i++) {
-                nodes = nodes.concat(getDescendants(elements[i]));
-            }
-            var text = new Array();
-            for (var i = 0; i < nodes.length; i++) {
-                if (nodes[i].nodeType == Node.TEXT_NODE){
-                    text.push(nodes[i]);
-                }
-            }
-            elementsCopy = new Array(elements.length);
-            for (var i = 0; i < elements.length; i++) {
-                elementsCopy[i] = elements[i].innerHTML;
-            }
+            createTextCopy();
             if (document.getElementById('search-plugin-pheeantom').value != '') {
                 for (var k = 0; k < text.length; k++) {
-                    if (text[k].nodeValue.match(/^[ \t\v\r\n\f]*$/) === null) {
-                        var elems = parseHTML(text[k].nodeValue.replace(new RegExp("(" + preg_quote(document.getElementById('search-plugin-pheeantom').value) + ")", 'gi'), "<span style='background-color: red; display: inline; padding: 0; margin: 0'>$1</span>"));
-                        text[k].replaceWith(elems);
-                    }
+                    var elems = parseHTML(text[k].nodeValue.replace(new RegExp("(" + preg_quote(document.getElementById('search-plugin-pheeantom').value) + ")", 'gi'), "<span style='background-color: red; display: inline; padding: 0; margin: 0'>$1</span>"));
+                    text[k].replaceWith(elems);
                 }
             }
-            /*else {
-                for (var k = 0; k < elements.length; k++) {
-                    elements[k].innerHTML = elementsCopy[k];
-                }
-            }*/
         }
     });
     div.appendChild(settingLabel);
@@ -89,9 +111,12 @@ var key1 = false;
 var key2 = false;
 var key3 = false;
 var search = false;
-var elements;
-var elementsCopy;
+var text;
+var textCopy;
 var set = 0;
+
+var num = 1;
+
 document.addEventListener('keydown', function(event) {
     if (event.key == 'Alt')
         key1 = true;
@@ -104,32 +129,36 @@ document.addEventListener('keydown', function(event) {
         var inp = document.createElement('input');
         inp.addEventListener('input', function(event) {
             //console.time('FirstWay');
-            for (var j = 0; j < elements.length; j++) {
-                elements[j].innerHTML = elementsCopy[j];
+            /*if (set == 0) {
+                bold();
             }
-            var nodes = new Array();
-            for (var i = 0; i < elements.length; i++) {
-                nodes = nodes.concat(getDescendants(elements[i]));
+            else if (set == 1) {
+                cursive();
             }
-            var text = new Array();
-            for (var i = 0; i < nodes.length; i++) {
-                if (nodes[i].nodeType == Node.TEXT_NODE){
-                    text.push(nodes[i]);
-                }
+            else if (set == 2) {
+                header();
             }
-            if (document.getElementById('search-plugin-pheeantom').value != '') {
-                for (var k = 0; k < text.length; k++) {
-                    if (text[k].nodeValue.match(/^[ \t\v\r\n\f]*$/) === null) {
+            else if (set == 3) {
+                link();
+            }*/
+            //console.log(text.length + " " + textCopy.length);
+            for (var j = 0; j < text.length; j++) {
+                text[j].nodeValue = textCopy[j];
+            }
+            //createTextCopy();
+            /*for (var i = 0; i < text.length; i++) {
+                console.log(text[i].nodeValue);
+            }*/
+            if (num == 1) {
+                if (document.getElementById('search-plugin-pheeantom').value != '') {
+                    for (var k = 0; k < text.length; k++) {
                         var elems = parseHTML(text[k].nodeValue.replace(new RegExp("(" + preg_quote(document.getElementById('search-plugin-pheeantom').value) + ")", 'gi'), "<span style='background-color: red; display: inline; padding: 0; margin: 0'>$1</span>"));
                         text[k].replaceWith(elems);
                     }
                 }
             }
-            /*else {
-                for (var k = 0; k < elements.length; k++) {
-                    elements[k].innerHTML = elementsCopy[k];
-                }
-            }*/
+            num++;
+            //num++; text[25].nodeValue = num.toString();
             //console.timeEnd('FirstWay');
         });
         inp.id = 'search-plugin-pheeantom';
@@ -153,29 +182,16 @@ document.addEventListener('keydown', function(event) {
         div.style.bottom = '20px';
         div.style.left = '5px';
         div.style.zIndex = '10000';
-        add_setting('bold', 0, function(){
-            elements = Array.from(document.querySelectorAll('*')).filter(element => getComputedStyle(element).fontWeight >= 500);
-            //elements = Array.from(elements).filter(element => element.children.length == 0);
-        }, div);
-        add_setting('cursive', 1, function(){
-            elements = Array.from(document.querySelectorAll('*')).filter(element => getComputedStyle(element).fontStyle == 'italic' || getComputedStyle(element).fontStyle == 'oblique');
-            //elements = Array.from(elements).filter(element => element.children.length == 0);
-        }, div);
-        add_setting('header', 2, function(){
-            elements = Array.from(document.querySelectorAll('h1,h2,h3,h4,h5,h6'));
-        }, div);
-        add_setting('link', 3, function(){
-            elements = Array.from(document.querySelectorAll('a'));
-        }, div);
+        add_setting('bold', 0, bold, div);
+        add_setting('cursive', 1, cursive, div);
+        add_setting('header', 2, header, div);
+        add_setting('link', 3, link, div);
         div.style.boxSizing = 'border-box';
         div.style.height = '49.300px';
         document.body.appendChild(div);
-        elements = Array.from(document.querySelectorAll('*')).filter(element => getComputedStyle(element).fontWeight >= 500);
-        //elements = Array.from(elements).filter(element => element.children.length == 0);
-        elementsCopy = new Array(elements.length);
-        for (var i = 0; i < elements.length; i++) {
-            elementsCopy[i] = elements[i].innerHTML;
-        }
+        var elements = Array.from(document.querySelectorAll('*')).filter(element => getComputedStyle(element).fontWeight >= 500);
+        createText(elements);
+        createTextCopy();
     }
     if (event.key == 'Escape' && search) {
         document.getElementById('search-plugin-pheeantom').remove();
