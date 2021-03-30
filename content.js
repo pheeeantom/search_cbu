@@ -39,8 +39,14 @@ function add_setting(name, number, searchCallback, div) {
         setting.checked = true;
     setting.addEventListener('click', function(event) {
         if (set != number) {
+            /*for (var i = 0; i < elementsCopy.length; i++) {
+                console.log(elementsCopy[i]);
+            }*/
             for (var j = 0; j < elements.length; j++) {
-                elements[j].innerHTML = elementsCopy[j];
+                //elements[j].innerHTML = elementsCopy[j];
+                /*elements[j].innerHTML = '';
+                elements[j].appendChild(parseHTML(elementsCopy[j]));*/
+                elements[j].innerHTML = elements[j].innerHTML.replace(new RegExp("<span style='background-color: red; display: inline; padding: 0; margin: 0'>(.+)</span>", "g"), "$1");
             }
             set = number;
             for (var i = 0; i < number; i++) {
@@ -60,10 +66,10 @@ function add_setting(name, number, searchCallback, div) {
                     text.push(nodes[i]);
                 }
             }
-            elementsCopy = new Array(elements.length);
+            /*elementsCopy = new Array(elements.length);
             for (var i = 0; i < elements.length; i++) {
                 elementsCopy[i] = elements[i].innerHTML;
-            }
+            }*/
             if (document.getElementById('search-plugin-pheeantom').value != '') {
                 for (var k = 0; k < text.length; k++) {
                     if (text[k].nodeValue.match(/^[ \t\v\r\n\f]*$/) === null) {
@@ -72,6 +78,7 @@ function add_setting(name, number, searchCallback, div) {
                     }
                 }
             }
+            //console.log(elements.length + " " + elementsCopy.length);
             /*else {
                 for (var k = 0; k < elements.length; k++) {
                     elements[k].innerHTML = elementsCopy[k];
@@ -90,7 +97,7 @@ var key2 = false;
 var key3 = false;
 var search = false;
 var elements;
-var elementsCopy;
+//var elementsCopy;
 var set = 0;
 document.addEventListener('keydown', function(event) {
     if (event.key == 'Alt')
@@ -105,7 +112,10 @@ document.addEventListener('keydown', function(event) {
         inp.addEventListener('input', function(event) {
             //console.time('FirstWay');
             for (var j = 0; j < elements.length; j++) {
-                elements[j].innerHTML = elementsCopy[j];
+                //elements[j].innerHTML = elementsCopy[j];
+                /*elements[j].innerHTML = '';
+                elements[j].appendChild(parseHTML(elementsCopy[j]));*/
+                elements[j].innerHTML = elements[j].innerHTML.replace(new RegExp("<span style='background-color: red; display: inline; padding: 0; margin: 0'>(.+)</span>", "g"), "$1");
             }
             var nodes = new Array();
             for (var i = 0; i < elements.length; i++) {
@@ -125,6 +135,7 @@ document.addEventListener('keydown', function(event) {
                     }
                 }
             }
+            //console.log(elements.length + " " + elementsCopy.length);
             /*else {
                 for (var k = 0; k < elements.length; k++) {
                     elements[k].innerHTML = elementsCopy[k];
@@ -172,10 +183,10 @@ document.addEventListener('keydown', function(event) {
         document.body.appendChild(div);
         elements = Array.from(document.querySelectorAll('*')).filter(element => getComputedStyle(element).fontWeight >= 500);
         //elements = Array.from(elements).filter(element => element.children.length == 0);
-        elementsCopy = new Array(elements.length);
+        /*elementsCopy = new Array(elements.length);
         for (var i = 0; i < elements.length; i++) {
             elementsCopy[i] = elements[i].innerHTML;
-        }
+        }*/
     }
     if (event.key == 'Escape' && search) {
         document.getElementById('search-plugin-pheeantom').remove();
